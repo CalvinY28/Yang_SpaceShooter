@@ -15,6 +15,14 @@ public class Player : MonoBehaviour
     //private float speed = 0.001f;
 
     public float playerSpeed = 0.01f; // for task 1
+    //public float timeToReachSpeed = 3f;
+    //public float targetSpeed = 0.01f;
+    //public float accleration;
+
+    private void Start()
+    {
+        //accleration = targetSpeed / timeToReachSpeed;
+    }
 
     void Update()
     {
@@ -30,17 +38,19 @@ public class Player : MonoBehaviour
 
         //////////////////////////  Tasks  ////////////////////////////////////////////////////////////////////////////////////
 
-        PlayerMovement(playerSpeed); // I tried plugging in a vector3 on accident later realized i needed a float
+        PlayerMovement(playerSpeed); // I tried plugging in a vector3 on accident, realized i needed a float
 
     }
 
     public void PlayerMovement(float movement) // player controller method
     {
-        //if (transform.position.x > 24) bonus
         if (Input.GetKey(KeyCode.UpArrow)) // forgot i needed input to getting a key. originally just did "GetKey"
         {
             Vector3 velocity = new Vector3(0f, movement); // x y           y movement = up         -movement = down                 x movement = right       -movement = left
-            transform.position += velocity;
+            //Vector3 velocity = Vector3.zero;
+            //velocity += accleration * transform.up * Time.deltaTime;
+            //accleration = targetSpeed / timeToReachSpeed;
+            transform.position += velocity; // broken for now **
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
