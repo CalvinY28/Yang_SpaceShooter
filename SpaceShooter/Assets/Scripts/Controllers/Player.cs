@@ -14,10 +14,11 @@ public class Player : MonoBehaviour
     //private Vector3 velocity = Vector3.zero;
     //private float speed = 0.001f;
 
-    public float playerSpeed = 0.01f; // for task 1
-    //public float timeToReachSpeed = 3f;
-    //public float targetSpeed = 0.01f;
-    //public float accleration;
+    //public float playerSpeed = 0.01f; // for task 1A
+    private Vector3 currentVelocity = Vector3.zero; // for task 1B
+    public float maxSpeed = 5f; // for task 1B
+    public float acclerationTime = 1f; // for task 1B
+    public float declerationTime = 2f; // for task 1C
 
     private void Start()
     {
@@ -38,37 +39,87 @@ public class Player : MonoBehaviour
 
         //////////////////////////  Tasks  ////////////////////////////////////////////////////////////////////////////////////
 
-        PlayerMovement(playerSpeed); // I tried plugging in a vector3 on accident, realized i needed a float
+        //PlayerMovementVelocity(playerSpeed); // I tried plugging in a vector3 on accident, realized i needed a float // Task 1A
+
+        PlayerMovementAccleration(maxSpeed, acclerationTime, declerationTime); // Task 1B 1C
 
     }
 
-    public void PlayerMovement(float movement) // player controller method
+    //public void PlayerMovementVelocity(float movement) // player controller method task 1A
+    //{
+    //    if (Input.GetKey(KeyCode.UpArrow)) // forgot i needed input to getting a key. originally just did "GetKey"
+    //    {
+    //        Vector3 velocity = new Vector3(0f, movement); // x y           y movement = up         -movement = down                 x movement = right       -movement = left
+    //        transform.position += velocity;
+    //    }
+    //
+    //    if (Input.GetKey(KeyCode.DownArrow))
+    //    {
+    //        Vector3 velocity = new Vector3(0f, -movement);
+    //        transform.position += velocity;
+    //    }
+    //
+    //    if (Input.GetKey(KeyCode.RightArrow))
+    //    {
+    //        Vector3 velocity = new Vector3(movement, 0f);
+    //        transform.position += velocity;
+    //    }
+    //
+    //    if (Input.GetKey(KeyCode.LeftArrow))
+    //    {
+    //        Vector3 velocity = new Vector3(-movement, 0f);
+    //        transform.position += velocity;
+    //    }
+    //
+    //}
+
+    public void PlayerMovementAccleration(float maxSpeed, float acclerationTime, float declerationTime) // player controller method task 1B
     {
-        if (Input.GetKey(KeyCode.UpArrow)) // forgot i needed input to getting a key. originally just did "GetKey"
+        Vector3 velocity = Vector3.zero; // i need this here to start velocity at zero
+
+        float accleration = maxSpeed/acclerationTime; // accleration calculation
+        float decleration = maxSpeed / declerationTime;
+        float Xspeed = 0f;
+        float Yspeed = 0f;
+
+        if (Input.GetKey(KeyCode.UpArrow))
         {
-            Vector3 velocity = new Vector3(0f, movement); // x y           y movement = up         -movement = down                 x movement = right       -movement = left
-            //Vector3 velocity = Vector3.zero;
-            //velocity += accleration * transform.up * Time.deltaTime;
-            //accleration = targetSpeed / timeToReachSpeed;
-            transform.position += velocity; // broken for now **
+            Yspeed = maxSpeed;
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            Vector3 velocity = new Vector3(0f, -movement);
-            transform.position += velocity;
+            Yspeed = -maxSpeed;
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            Vector3 velocity = new Vector3(movement, 0f);
-            transform.position += velocity;
+            Xspeed = maxSpeed;
         }
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            Vector3 velocity = new Vector3(-movement, 0f);
-            transform.position += velocity;
+            Xspeed = -maxSpeed;
+        }
+
+        //currentVelocity.x += transform.position * accleration * Time.deltaTime;
+        //transform.position += currentVelocity.x * Xspeed * accleration * Time.deltaTime;
+
+        currentVelocity.x = Mathf.MoveTowards(currentVelocity.x, Xspeed, accleration * Time.deltaTime); // utilizing .x and .y for x and y values
+        currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, Yspeed, accleration * Time.deltaTime);
+
+        transform.position += currentVelocity * Time.deltaTime;
+
+        //////Task 1C 
+
+        if (Xspeed == 0f) // if i stop adding gas decelerate.
+        {
+            currentVelocity.x = Mathf.MoveTowards(currentVelocity.x, Xspeed, decleration * Time.deltaTime); // the same thing
+        }
+
+        if (Yspeed == 0f)
+        {
+            currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, Yspeed, decleration * Time.deltaTime);
         }
 
     }
