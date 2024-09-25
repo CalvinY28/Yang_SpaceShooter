@@ -20,6 +20,11 @@ public class Player : MonoBehaviour
     public float acclerationTime = 1f; // for task 1B
     public float declerationTime = 2f; // for task 1C
 
+    /////////////////////////////////////////////////////////////// WEEK 4
+
+    public float radius;
+    public List<int> circlePoints = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
+
     private void Start()
     {
         //accleration = targetSpeed / timeToReachSpeed;
@@ -123,5 +128,21 @@ public class Player : MonoBehaviour
         }
 
     }
+
+
+    //////////////////////////////// WEEK 4 
+
+
+
+
+    public void EnemyRadar(float radius, int circlePoints)
+    {
+        
+    }
+
+
+
+
+
 
 }
