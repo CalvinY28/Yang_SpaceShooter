@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -22,8 +23,8 @@ public class Player : MonoBehaviour
 
     /////////////////////////////////////////////////////////////// WEEK 4
 
-    public float radius;
-    public List<int> circlePoints = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
+    public float radius = 3f;
+    public int circlePoints = 8;
 
     private void Start()
     {
@@ -47,6 +48,10 @@ public class Player : MonoBehaviour
         //PlayerMovementVelocity(playerSpeed); // I tried plugging in a vector3 on accident, realized i needed a float // Task 1A
 
         PlayerMovementAccleration(maxSpeed, acclerationTime, declerationTime); // Task 1B 1C
+
+        /////////////////////////////// WEEK 4 ////////////////////////////////
+
+        EnemyRadar(radius, circlePoints);
 
     }
 
@@ -137,7 +142,38 @@ public class Player : MonoBehaviour
 
     public void EnemyRadar(float radius, int circlePoints)
     {
-        
+
+        for (int i = 0; i < circlePoints; i++) // so i can have multiple points ( i only need 8)
+        {
+            //Debug.Log(Mathf.PI * 2); just checking pi
+            // i can also just plug in 3.1415...f or 6. whatever
+            float anlge = i * Mathf.PI * 2f / circlePoints; // must multiply by 2 becasue 2pi radians in a full circle
+
+            Vector3 pointOnCricle = new Vector3(Mathf.Cos(anlge), Mathf.Sin(anlge), 0) * radius + transform.position; // from class
+
+            //Vector3 nextPoint = new Vector3 (Mathf.Cos(anlge + circlePoints ), Mathf.Sin(anlge + circlePoints), 0) * radius + transform.position; // plus a little more
+            Vector3 nextPoint = new Vector3 (Mathf.Cos(anlge + Mathf.PI * 2f / circlePoints), Mathf.Sin(anlge + Mathf.PI * 2f / circlePoints), 0) * radius + transform.position;
+            // i honeslty just kept plugging values in here cus the math hurt head. I copied the equation i used for angle.
+            Debug.DrawLine(pointOnCricle, nextPoint, Color.green, 0.1f);
+
+        }
+
+        float distanceToEnemy = Vector3.Distance(transform.position, enemyTransform.position);
+        // for color changing just use the same code but in an if statement for distance and circle radius
+        if (distanceToEnemy <= radius)
+        {
+            for (int i = 0; i < circlePoints; i++)
+            {
+                float anlge = i * Mathf.PI * 2f / circlePoints;
+
+                Vector3 pointOnCricle = new Vector3(Mathf.Cos(anlge), Mathf.Sin(anlge), 0) * radius + transform.position;
+
+                Vector3 nextPoint = new Vector3(Mathf.Cos(anlge + Mathf.PI * 2f / circlePoints), Mathf.Sin(anlge + Mathf.PI * 2f / circlePoints), 0) * radius + transform.position;
+
+                Debug.DrawLine(pointOnCricle, nextPoint, Color.red, 0.1f);
+            }
+        }
+
     }
 
 
