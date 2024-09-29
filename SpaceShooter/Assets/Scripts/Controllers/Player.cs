@@ -23,12 +23,17 @@ public class Player : MonoBehaviour
 
     /////////////////////////////////////////////////////////////// WEEK 4
 
-    public float radius = 3f;
-    public int circlePoints = 8;
+    public float radius = 3f; // for task 1
+    public int circlePoints = 8; // for task 1
+
+    public float radius2; // for task 2
+    public int numberOfPowerups; // for task 2
+    public GameObject powerupPrefab; // for task 2
 
     private void Start()
     {
         //accleration = targetSpeed / timeToReachSpeed;
+        SpawnPowerups(radius2, numberOfPowerups);
     }
 
     void Update()
@@ -51,7 +56,9 @@ public class Player : MonoBehaviour
 
         /////////////////////////////// WEEK 4 ////////////////////////////////
 
-        EnemyRadar(radius, circlePoints);
+        EnemyRadar(radius, circlePoints); // task 1
+
+        //SpawnPowerups(radius2, numberOfPowerups); // task 2
 
     }
 
@@ -176,7 +183,40 @@ public class Player : MonoBehaviour
 
     }
 
+    public void SpawnPowerups(float radius2, int numberOfPowerups)
+    {
 
+        //for (int i = 0; i < numberOfPowerups; i++)
+        //{
+        //    float angle = i * Mathf.PI * 2f / numberOfPowerups;
+
+        //    Vector3 spawnPosition = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius; // basically same as task 1
+
+        //    spawnPosition += transform.position;
+
+        //    Instantiate(powerupPrefab, spawnPosition, Quaternion.identity); // quteitninon identity
+        //}
+
+        StartCoroutine(SpawnPowerupTimer(radius2, numberOfPowerups));
+
+    }
+
+    private IEnumerator SpawnPowerupTimer(float radius2, int numberOfPowerups)
+    {
+
+        for (int i = 0; i < numberOfPowerups; i++)
+        {
+            float angle = i * Mathf.PI * 2f / numberOfPowerups;
+            Vector3 spawnPosition = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius;
+
+            spawnPosition += transform.position;
+
+            Instantiate(powerupPrefab, spawnPosition, Quaternion.identity); // quteitninon identity
+            //yield return new WaitForSeconds(5f);
+            yield return null;
+        }
+        //yield return new WaitForSeconds(5f);
+    }
 
 
 
