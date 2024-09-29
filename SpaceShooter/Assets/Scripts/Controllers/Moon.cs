@@ -23,7 +23,7 @@ public class Moon : MonoBehaviour
 
     public void OrbitalMotion(float radius, float speed, Transform target)
     {
-        float xPos = target.position.x + Mathf.Cos(angle) * radius; // left and right
+        float xPos = target.position.x + Mathf.Cos(angle) * radius; // left and right 
         float yPos = target.position.y + Mathf.Sin(angle) * radius; // up and down
 
         angle += speed * Time.deltaTime;
