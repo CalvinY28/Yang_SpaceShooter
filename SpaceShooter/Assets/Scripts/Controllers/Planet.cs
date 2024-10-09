@@ -9,9 +9,9 @@ public class Planet : MonoBehaviour
 
     public Transform player;
 
-    //public float orbitDistance = 1.5f;
-    //public float orbitSpeed = 50f;
-    //private bool isOrbiting = false;
+    public float orbitDistance = 1.5f;
+    public float orbitSpeed = 50f;
+    private bool isOrbiting = false;
 
     void Start()
     {
@@ -38,7 +38,17 @@ public class Planet : MonoBehaviour
 
             Vector3 pullVector = directionToPlanet * gravitationalForce * Time.deltaTime;
             player.position += pullVector;
+
+            if (distanceToPlanet < orbitDistance)
+            {
+                isOrbiting = true;
+            }
         }
+    }
+
+    void InOrbit()
+    {
+
     }
 
 }
