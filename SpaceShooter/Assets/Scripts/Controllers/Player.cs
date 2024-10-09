@@ -30,6 +30,10 @@ public class Player : MonoBehaviour
     public int numberOfPowerups; // for task 2
     public GameObject powerupPrefab; // for task 2
 
+    ///////////////////////////////////////////////////////////// FOR SPACE SHOOTER ASSINGMENT
+
+    public float pickupRadius = 1f;
+
     private void Start()
     {
         //accleration = targetSpeed / timeToReachSpeed;
@@ -59,6 +63,10 @@ public class Player : MonoBehaviour
         EnemyRadar(radius, circlePoints); // task 1
 
         //SpawnPowerups(radius2, numberOfPowerups); // task 2
+
+        ////////////////////////////////////////////////////////////////////// FOR SPACE SHOOTER ASSINGMENT
+        
+        PickupPowerups();
 
     }
 
@@ -94,7 +102,7 @@ public class Player : MonoBehaviour
     {
         Vector3 velocity = Vector3.zero; // i need this here to start velocity at zero
 
-        float accleration = maxSpeed/acclerationTime; // accleration calculation
+        float accleration = maxSpeed / acclerationTime; // accleration calculation
         float decleration = maxSpeed / declerationTime;
         float Xspeed = 0f;
         float Yspeed = 0f;
@@ -159,7 +167,7 @@ public class Player : MonoBehaviour
             Vector3 pointOnCricle = new Vector3(Mathf.Cos(anlge), Mathf.Sin(anlge), 0) * radius + transform.position; // from class
 
             //Vector3 nextPoint = new Vector3 (Mathf.Cos(anlge + circlePoints ), Mathf.Sin(anlge + circlePoints), 0) * radius + transform.position; // plus a little more
-            Vector3 nextPoint = new Vector3 (Mathf.Cos(anlge + Mathf.PI * 2f / circlePoints), Mathf.Sin(anlge + Mathf.PI * 2f / circlePoints), 0) * radius + transform.position;
+            Vector3 nextPoint = new Vector3(Mathf.Cos(anlge + Mathf.PI * 2f / circlePoints), Mathf.Sin(anlge + Mathf.PI * 2f / circlePoints), 0) * radius + transform.position;
             // i honeslty just kept plugging values in here cus the math hurt head. I copied the equation i used for angle.
             Debug.DrawLine(pointOnCricle, nextPoint, Color.green, 0.1f);
 
@@ -218,7 +226,27 @@ public class Player : MonoBehaviour
         //yield return new WaitForSeconds(5f);
     }
 
+    public void PickupPowerups()
+    {
+        // had to search for how to use tags
+        GameObject[] powerups = GameObject.FindGameObjectsWithTag("Powerup"); // find powers ups and loop
+        foreach (GameObject powerup in powerups)
+        {
+            // distance between player and power up
+            float distanceToPowerup = Vector3.Distance(transform.position, powerup.transform.position);
+
+            if (distanceToPowerup <= pickupRadius)
+            {
+                Destroy(powerup);
+                HyperSpeed();
+            }
+        }
+    }
+
+    public void HyperSpeed()
+    {
+        Debug.Log("hyperspeed");
+    }
 
 
-
-}
+ }
