@@ -845,9 +845,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pullRadius: 7
   pullStrength: 3
-  player: {fileID: 2043659656}
   orbitDistance: 3
   orbitSpeed: 200
+  objectsToPullList:
+  - {fileID: 2043659656}
+  - {fileID: 892270334}
 --- !u!212 &757130250
 SpriteRenderer:
   m_ObjectHideFlags: 0
