@@ -12,6 +12,7 @@ public class Planet : MonoBehaviour
     public float orbitDistance = 1.5f;
     public float orbitSpeed = 50f;
     private bool isOrbiting = false;
+    public float orbitAngle;
 
     void Start()
     {
@@ -20,7 +21,24 @@ public class Planet : MonoBehaviour
 
     void Update()
     {
-        ApplyGravitationalPull();
+        if (!isOrbiting)
+        {
+            ApplyGravitationalPull();
+        }
+        else
+        {
+            InOrbit();
+        }
+
+        if (isOrbiting == false)
+        {
+            Debug.Log("is orbirting is false");
+        }
+        else
+        {
+            Debug.Log("is orbiting is true");
+        }
+
     }
 
     void ApplyGravitationalPull()
@@ -32,7 +50,7 @@ public class Planet : MonoBehaviour
         // If the player is in pull radius then get pulled
         if (distanceToPlanet < pullRadius)
         {
-            directionToPlanet.Normalize(); // Normalize
+            //directionToPlanet.Normalize(); // Normalize
 
             float gravitationalForce = Mathf.Lerp(pullStrength, 0f, distanceToPlanet / pullRadius); // force with respect to distance
 
@@ -42,12 +60,37 @@ public class Planet : MonoBehaviour
             if (distanceToPlanet < orbitDistance)
             {
                 isOrbiting = true;
+
+                // checking to make sure it orbits in the right spot
+                Vector3 check = player.position - transform.position;
+                orbitAngle = Mathf.Atan2(check.y, check.x);
             }
+
+        }
+        else
+        {
+            isOrbiting = false;
         }
     }
 
     void InOrbit()
     {
+        orbitAngle += orbitSpeed * Time.deltaTime * Mathf.Deg2Rad;  // multiply by deg2rad
+
+        float x = transform.position.x + Mathf.Cos(orbitAngle) * orbitDistance;
+        float y = transform.position.y + Mathf.Sin(orbitAngle) * orbitDistance;
+
+        player.position = new Vector3(x, y, 0f);
+
+        // make sure it orbits in the right spot this is wrong
+        //player.position = (player.position - transform.position).normalized * orbitDistance + transform.position;
+
+        // stopping the player from constantly orbiting
+        float currentDistanceToPlanet = Vector3.Distance(player.position, transform.position);
+        if (currentDistanceToPlanet > orbitDistance)
+        {
+            isOrbiting = false;
+        }
 
     }
 

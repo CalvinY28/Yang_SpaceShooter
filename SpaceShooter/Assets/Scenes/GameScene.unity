@@ -843,9 +843,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fca1f8dcea5e55d4b8458fd963346dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pullRadius: 4
-  pullStrength: 5
+  pullRadius: 7
+  pullStrength: 3
   player: {fileID: 2043659656}
+  orbitDistance: 3
+  orbitSpeed: 200
 --- !u!212 &757130250
 SpriteRenderer:
   m_ObjectHideFlags: 0
