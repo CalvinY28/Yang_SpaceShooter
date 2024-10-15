@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
     ///////////////////////////////////////////////////////////// FOR SPACE SHOOTER ASSINGMENT
 
     public float pickupRadius = 1f;
+    //public GameObject[] powerupPrefabs; dont need
+    public GameObject astroidPrefab;
 
     private void Start()
     {
@@ -221,6 +223,11 @@ public class Player : MonoBehaviour
 
             Instantiate(powerupPrefab, spawnPosition, Quaternion.identity); // quteitninon identity
             //yield return new WaitForSeconds(5f);
+
+            //int randomIndex = Random.Range(0, powerupPrefabs.Length);
+            //GameObject selectedPowerup = powerupPrefabs[randomIndex]; // do not need
+            //Instantiate(selectedPowerup, spawnPosition, Quaternion.identity);
+
             yield return null;
         }
         //yield return new WaitForSeconds(5f);
@@ -238,7 +245,22 @@ public class Player : MonoBehaviour
             if (distanceToPowerup <= pickupRadius)
             {
                 Destroy(powerup);
-                HyperSpeed();
+                int randomPowerup = Random.Range(0, 4);
+                switch (randomPowerup)
+                {
+                    case 0:
+                        HyperSpeed();
+                        break;
+                    case 1:
+                        Magnet();
+                        break;
+                    case 2:
+                        Shield();
+                        break;
+                    case 3:
+                        Homeing();
+                        break;
+                }
             }
         }
     }
@@ -246,7 +268,67 @@ public class Player : MonoBehaviour
     public void HyperSpeed()
     {
         Debug.Log("hyperspeed");
+        StartCoroutine(speedTimer()); // hyper speed stacks may or may not fix
+
+        IEnumerator speedTimer()
+        {
+            float originalMaxSpeed = maxSpeed;
+            maxSpeed *= 10f;
+
+            yield return new WaitForSeconds(5f);
+
+            maxSpeed = originalMaxSpeed;
+        }
     }
 
 
- }
+    public void Magnet()
+    {
+        Debug.Log("magnet");
+
+        GameObject[] powerups = GameObject.FindGameObjectsWithTag("Powerup");
+
+        foreach (GameObject powerup in powerups)
+        {
+            Vector3 directionToPlayer = (transform.position - powerup.transform.position);
+
+            float magnetSpeed = 50f;
+            powerup.transform.position += directionToPlayer * magnetSpeed * Time.deltaTime; // dosent work fix later
+        }
+    }
+
+    public void Shield()
+    {
+        Debug.Log("shield");
+        StartCoroutine(OrbitAsteroidAroundPlayer());
+
+        IEnumerator OrbitAsteroidAroundPlayer()
+        {
+            float orbitRadius = 2f;
+            float orbitSpeed = 50f;
+            float orbitAngle = 0f;
+
+            Vector3 spawnPosition = transform.position + new Vector3(orbitRadius, 0f, 0f);
+            GameObject shieldAsteroid = Instantiate(astroidPrefab, spawnPosition, Quaternion.identity);
+
+            // keep orbiting the asteroid while running
+            while (true)
+            {
+                orbitAngle += orbitSpeed * Time.deltaTime;
+
+                float x = transform.position.x + Mathf.Cos(orbitAngle * Mathf.Deg2Rad) * orbitRadius;
+                float y = transform.position.y + Mathf.Sin(orbitAngle * Mathf.Deg2Rad) * orbitRadius;
+
+                shieldAsteroid.transform.position = new Vector3(x, y, 0f);
+
+                yield return null;
+            }
+        }
+    }
+
+    public void Homeing()
+    {
+        Debug.Log("homing");
+    }
+
+}
