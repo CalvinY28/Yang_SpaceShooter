@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
     public float pickupRadius = 1f;
     //public GameObject[] powerupPrefabs; dont need
     public GameObject astroidPrefab;
+    public bool isHyperSpeedActive = false;
 
     private void Start()
     {
@@ -267,17 +268,26 @@ public class Player : MonoBehaviour
 
     public void HyperSpeed()
     {
+        if (isHyperSpeedActive)
+        {
+            Debug.Log("Hyperspeed is already active!");
+            return;
+        }
+
         Debug.Log("hyperspeed");
         StartCoroutine(speedTimer()); // hyper speed stacks may or may not fix
 
         IEnumerator speedTimer()
         {
+            isHyperSpeedActive = true;
             float originalMaxSpeed = maxSpeed;
             maxSpeed *= 10f;
 
             yield return new WaitForSeconds(5f);
 
             maxSpeed = originalMaxSpeed;
+
+            isHyperSpeedActive = false;
         }
     }
 
@@ -285,31 +295,69 @@ public class Player : MonoBehaviour
     public void Magnet()
     {
         Debug.Log("magnet");
+        StartCoroutine(magnetize());
 
-        GameObject[] powerups = GameObject.FindGameObjectsWithTag("Powerup");
-
-        foreach (GameObject powerup in powerups)
+        IEnumerator magnetize()
         {
-            Vector3 directionToPlayer = (transform.position - powerup.transform.position);
+            GameObject[] powerups = GameObject.FindGameObjectsWithTag("Powerup");
+            float magnetSpeed = 3f;
 
-            float magnetSpeed = 50f;
-            powerup.transform.position += directionToPlayer * magnetSpeed * Time.deltaTime; // dosent work fix later
+            while (true) // smooth pull no blinking or teleporting
+            {
+                bool allPowerupsReachedPlayer = true;
+
+                foreach (GameObject powerup in powerups)
+                {
+                    if (powerup == null)
+                    {
+                        continue; // continue the code even if power up is gone
+                    }
+
+                    Vector3 directionToPlayer = (transform.position - powerup.transform.position).normalized;
+                    float distanceToPlayer = Vector3.Distance(transform.position, powerup.transform.position);
+                    powerup.transform.position += directionToPlayer * magnetSpeed * Time.deltaTime;
+
+                    if (distanceToPlayer > 0.1f)
+                    {
+                        allPowerupsReachedPlayer = false;
+                    }
+                }
+
+                if (allPowerupsReachedPlayer)
+                {
+                    break; // stop loop
+                }
+
+                yield return null;
+            }
         }
     }
 
     public void Shield()
     {
-        Debug.Log("shield");
-        StartCoroutine(OrbitAsteroidAroundPlayer());
+        float orbitRadius = 2f;
+        float orbitSpeed = 50f;
+        //float orbitAngle = 0f;
+        int numberOfAsteroids = 1; // could not get this to work so I just set this to one to revert back to where I was orginally
+        float destroyRadius = 1f;
 
-        IEnumerator OrbitAsteroidAroundPlayer()
+        for (int i = 0; i < numberOfAsteroids; i++)
         {
-            float orbitRadius = 2f;
-            float orbitSpeed = 50f;
-            float orbitAngle = 0f;
+            float angle = i * Mathf.PI * 2f / numberOfAsteroids; // Angle for each asteroid
+            Vector3 spawnPosition = transform.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * orbitRadius;
+            StartCoroutine(OrbitAsteroidAroundPlayer(spawnPosition, angle, orbitRadius, orbitSpeed));
+        }
 
-            Vector3 spawnPosition = transform.position + new Vector3(orbitRadius, 0f, 0f);
-            GameObject shieldAsteroid = Instantiate(astroidPrefab, spawnPosition, Quaternion.identity);
+        Debug.Log("shield");
+
+        IEnumerator OrbitAsteroidAroundPlayer(Vector3 initialPosition, float initialAngle, float orbitRadius, float orbitSpeed)
+        {
+
+            float orbitAngle = initialAngle;
+
+            //Vector3 spawnPosition = transform.position + new Vector3(orbitRadius, 0f, 0f);
+            //Vector3 spawnPosition = transform.position + new Vector3(Mathf.Cos(initialAngle), Mathf.Sin(initialAngle), 0f) * orbitRadius;
+            GameObject shieldAsteroid = Instantiate(astroidPrefab, initialPosition, Quaternion.identity);
 
             // keep orbiting the asteroid while running
             while (true)
@@ -320,6 +368,24 @@ public class Player : MonoBehaviour
                 float y = transform.position.y + Mathf.Sin(orbitAngle * Mathf.Deg2Rad) * orbitRadius;
 
                 shieldAsteroid.transform.position = new Vector3(x, y, 0f);
+
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                foreach (GameObject enemy in enemies)
+                {
+                    float distanceToEnemy = Vector3.Distance(shieldAsteroid.transform.position, enemy.transform.position);
+                    if (distanceToEnemy <= destroyRadius)
+                    {
+
+                        Vector3 pushDirection = (enemy.transform.position - shieldAsteroid.transform.position);
+                        float pushForce = 5f;
+
+                        enemy.transform.position += pushDirection * pushForce;
+
+                        Destroy(shieldAsteroid);
+                        Debug.Log("SHEILD DOWN");
+                        yield break;
+                    }
+                }
 
                 yield return null;
             }
